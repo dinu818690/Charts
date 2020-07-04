@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts</title>
+    <link rel="stylesheet" href="static\css\style.css">
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+	
+	
+	
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+    <link rel="shortcut icon" href="static\images\bar_chart.ico" type="image/x-icon">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   
+</head>
+
+<body>
+    <div class="container">
+        {% with messages=get_flashed_messages(with_categories=true) %} {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+        <form action="/upload" method="POST" enctype="multipart/form-data" style="margin-top: 60px;">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file-input" name='file' />
+                    <label class="custom-file-label" for="file-input">Choose file</label>
+                </div>
+                <hr>
+                <div id="uploadbtn">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+			</div>
+        </form>
+        <div class="container">
+            <div class="row">
+                <div>
+                    <button type="button" onclick="firstplot()" class="btn btn-primary plot">Plot</button>
+                </div>
+                <div>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#aboutmodal">About</button>
+
+                </div>
+            </div>
+        </div>
+		
+		<!-- About Modal -->
+<div class="modal fade" id="aboutmodal" tabindex="-1" role="dialog" aria-labelledby="AboutModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="AboutModalLabel">About WebSite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>This has two plot.
+		One scatter plot and other interactive ...........
+		.........</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- About modal end-->
+		<div class="tbl container hide">
+        <h1>charts</h1>
+        <table>
+            <tr>
+                <td>
+                    <div class="card" style="width: 40em;height:36em">
+                        <div class="card-body">
+                            <canvas id="scatter" width="425" height="360"></canvas>
+                        </div>
+                    </div>
+                </td>
+                <td id="secondplot" class="hide">
+                    <div class="wrapper card"  style="width: 40em;height:36em">
+                        <div class="card-body">
+                            <canvas id="interactivebar" width="425" height="360"></canvas>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+		</div>
+    </div>
+    <script>
+	var count=0;
+	function firstplot(){
+	<!-- var scatterdataA; -->
+	<!-- var scatterdataB; -->
+	<!-- $.ajax({ -->
+   <!-- url: "/data", -->
+   <!-- type: "get", -->
+   <!-- success: function(response) { -->
+   <!-- scatterdataA=response.A; -->
+   <!-- scatterdataB=response.B; -->
+    <!-- console.log(response.A) -->
+	<!-- console.log(response.B) -->
+   <!-- }, -->
+   <!-- failure:function(error){ -->
+   <!-- console.log(error)} -->
+
+ <!-- }); -->
+ if(count==0){
+	$('.tbl').removeClass('hide')
+	count++;
+	}
+	var canvas = document.getElementById('scatter');
+	console.log({{scatterAx}})
+        var ctx = canvas.getContext('2d');
+        
+        var scatterChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: ['A'],
+                    backgroundColor: 'red',
+                    data: {{dataA}}
+                }, {
+                    label: ['B'],
+                    backgroundColor: 'green',
+					data:  {{dataB}}
+                }],
+            },
+            options: {
+                events: ['click'],
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+						ticks: {
+							min: {{X[0]}},
+							max: {{X[1]}}
+						}
+                    }],
+					yAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+						ticks: {
+							min: {{Y[0]}},
+							max: {{Y[1]}}
+						}
+                    }],
+					
+                },
+
+                onClick(event) {
+					var clickedPoint=scatterChart.getElementsAtEvent(event)
+					if(clickedPoint.length>0){
+						second(event);
+						console.log(clickedPoint)
+					}
+                }
+            }
+        });
+}
+        function second(event) {
+		count++;
+            var canvas = document.getElementById('interactivebar');
+            var ctx1 = canvas.getContext('2d');
+            var value = 4;
+            var value1 = 20;
+			if(count>1){
+			$('#secondplot').removeClass('hide');
+			}
+            //console.log(JSON.parse(labelsVar))
+            //console.log(JSON.parse(dataVar1))
+            //console.log(dataVar1)
+            var myChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: [
+					{% for item in labels %}
+                        "{{ item }}", 
+					{% endfor %}
+                    ],
+                    datasets: [{
+                        label: "A",
+                        backgroundColor: "blue",
+                        data: [
+						{% for item in data1 %}
+                            {{ item }},
+							{% endfor %}
+
+                        ]
+                    }, {
+                        label: "B",
+                        backgroundColor: "orange",
+                        data: [
+						{% for item in data2 %}
+                            {{ item }},
+							{% endfor %}
+
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: "top"
+                    },
+                    title: {
+                        display: true,
+                        text: "Index: " + value + " " + "THRESHOLD: " + value1
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            label: "Frequency"
+                        }]
+                    }
+                }
+            });
+        }
+        $(document).ready(function() {
+		var count = 0;
+            $('#file-input').on('change', function() {
+                var fileName = $(this).val();
+                $(this).next('.custom-file-label').html(fileName);
+            })
+        })
+    </script>
+</body>
+
+</html>
