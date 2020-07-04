@@ -16,7 +16,7 @@ debug=os.getenv('DEBUG')
 
 
 app=Flask(__name__)
-app.secret_key = 'Dinesh scret'
+app.secret_key = 'App secret'
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -50,7 +50,7 @@ def allowed_file(filename):
 def upload():
     print(request.method)
     if request.method == 'POST':
-        # check if the post request does not have the file part
+        # check if the post request does not have the file part 
         if 'file' not in request.files:
             flash('No file selected to upload','error')
         file = request.files['file']
