@@ -27,10 +27,6 @@ PORT=5000
 @app.route('/',methods=['GET','POST'])
 def charts():
     scatterdataA,scatterdataB,X,Y=get_data()
-    scatterdataAx=[1,2,3,4,5]#list(scatterdataA['x'].values)
-    scatterdataAy=[3,4,8,9,6]#list(scatterdataA['y'].values)
-    scatterdataBx=[3,9,6,5,7]#list(scatterdataB['x'].values)
-    scatterdataBy=[9,5,6,2,7]#list(scatterdataB['y'].values)
     legend = 'Monthly Data'
     labels = [1,2,3,4,5]
     data1 = [2,3,7,9,2]
